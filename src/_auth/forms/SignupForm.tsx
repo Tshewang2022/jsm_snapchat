@@ -3,12 +3,13 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useCreateUserAccountMutation,
   useSignInAccount,
 } from "@/lib/react-query/quriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 // imports for building up the forms
 import {
@@ -22,14 +23,17 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { SignupValidation } from "@/lib/validations";
+// import { useContext } from "react";
 
 const SignupForm = () => {
   const { toast } = useToast();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
 
-  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
+  const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
     useCreateUserAccountMutation();
 
-  const { mutateAsync: signInAccount, isLoading: isSigning } =
+  const { mutateAsync: signInAccount, isPending: isSigning } =
     useSignInAccount();
   //   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -55,11 +59,17 @@ const SignupForm = () => {
       password: values.password,
     });
     if (!session) {
-      return toast({ title: "Sign in failed. Please try again" });
+      return toast({ title: "Sign in failed. Please try ag" });
     }
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    const isLoggedIn = await checkAuthUser();
+    if (isLoggedIn) {
+      form.reset();
+      navigate("/");
+    } else {
+      return toast({ title: "sign up failed. please try again" });
+    }
   }
 
   return (
