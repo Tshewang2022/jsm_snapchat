@@ -5,9 +5,9 @@ import SignupForm from "./_auth/forms/SignupForm";
 
 import { Home } from "./_root/pages";
 import AuthLayout from "./_auth/AuthLayout";
-import { RootLayout } from "./_root/RootLayout";
 
 import { Toaster } from "@/components/ui/toaster";
+import RootLayout from "./_root/RootLayout";
 
 const App = () => {
   return (
@@ -20,8 +20,14 @@ const App = () => {
         </Route>
 
         {/* private routes */}
-        <Route element={<RootLayout />}>
+        < element={<RootLayout />}>
           <Route index element={<Home />} />
+          <Route path="/explore" element={<Explore/>}/>
+          <Route path="/create-post" element={<CreatePost/>}/>
+          <Route path="/update-post/:id" element={<EditPost/>}/>
+          <Route path="/posts/:id" element={<PostDetails/>}/>
+          <Route path="/profile/:id/*" element={<Profile/>}/>
+          <Route path="/update-profile/:id"/ element={<UpdateProfile/>}>
         </Route>
       </Routes>
       <Toaster />

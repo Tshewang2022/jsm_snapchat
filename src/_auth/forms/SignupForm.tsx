@@ -6,7 +6,7 @@ import Loader from "@/components/shared/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  useCreateUserAccountMutation,
+  useCreateUserAccount,
   useSignInAccount,
 } from "@/lib/react-query/quriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
@@ -31,7 +31,7 @@ const SignupForm = () => {
   const navigate = useNavigate();
 
   const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
-    useCreateUserAccountMutation();
+    useCreateUserAccount();
 
   const { mutateAsync: signInAccount, isPending: isSigning } =
     useSignInAccount();
@@ -59,7 +59,7 @@ const SignupForm = () => {
       password: values.password,
     });
     if (!session) {
-      return toast({ title: "Sign in failed. Please try ag" });
+      return toast({ title: "Sign in failed. Please try again" });
     }
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
