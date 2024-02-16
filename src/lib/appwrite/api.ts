@@ -97,11 +97,34 @@ export async function createPost(post: INewPost) {
     if (!uploadedFile) throw Error;
 
     // === GET FILE URL
-    const fileUrl = getFilePreview(uploadFile.$id);
+    const fileUrl = getFilePreview(uploadedFile.$id);
     if (!fileUrl) {
-      deleteFile(uploadFile.$1d);
+      deleteFile(uploadedFile.$id);
       throw Error;
     }
+
+    // === CONVERT TAGS INTO ARRAY
+    const tags = post.tags?.replace(/ /g, "").split(",") || [];
+
+    // === SAVE POST TO DATABASE
+    const newPost = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      ID.unique(),
+      {
+        creator: post.userId,
+        caption: post.caption,
+        imageUrl: fileUrl,
+        imageId: uploadedFile.$id,
+        location: post.location,
+        tags: tags,
+      }
+    );
+    if (!newPost) {
+      await deleteFile(uploadedFile.$id);
+      throw Error;
+    }
+    return newPost;
   } catch (error) {
     console.log(error);
   }
@@ -145,4 +168,15 @@ export async function deleteFile(fileId: string) {
   } catch (error) {
     console.log(error);
   }
+}
+
+// === SETTING API FOR GETTING THE RECENT POST ON HOME-PAGE ===
+export async function getRecentPosts() {
+  const posts = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.postCollectionId,
+    [Query.orderDesc("$createdAt"), Query.limit(20)]
+  );
+  if (!posts) throw Error;
+  return posts;
 }
