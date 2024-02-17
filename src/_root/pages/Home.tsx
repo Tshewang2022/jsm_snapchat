@@ -19,7 +19,7 @@ const Home = () => {
           ) : (
             <ul className="flex flex-col w-full gap-9 ">
               {posts?.documents.map((post: Models.Document) => (
-                <PostCard post={posts} />
+                <PostCard post={posts} key={post.caption} />
               ))}
               {/* === THIS THE PLACE WHERE WE FETCH NEW RECENT POST */} test
             </ul>
